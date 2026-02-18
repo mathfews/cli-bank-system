@@ -10,15 +10,14 @@ def bank_ui(active_user):
 ║  🏦 BANKSTACK  ║
 ╚════════════════╝
 👤 Username :  {active_user}
-💰 Current balance:  ${info["current balance"]}
-📥 Pending Incoming: ${info["pending incoming"]}
+💰 Current balance:  ${info["current balance"]:.2f}
+📥 Pending Incoming: ${info["pending incoming"]:.2f}
 ---------------------------
 1) Deposit ➕💵
 2) Withdraw ➖💸
 3) Transfer 🔄💰
 4) Exit 🚪"""
     print(bank_ui)
-
 def user_auth(type):
         while True:
             clean_terminal()
@@ -39,21 +38,31 @@ def user_auth(type):
             print(f"{result[1]} | Press enter to try again")
             input("")
 while True:
-    print("Menu \n🔐1) Login\n📝2) Register")
-    user_input = input("> ").strip().lower()
-    if user_input == "1" or user_input == "login":
-        username = user_auth("login")
-    if user_input == "2" or user_input == "register":
-        user_auth("register")
     while True:
-         clean_terminal()
-         bank_ui(username)
-         user_input = input("> ").strip().lower()
-         if user_input == "deposit" or user_input == "1":
                 while True:
                     try:
-                        amount = float(input("Deposit amount: "))
-                        auth.deposit(username, amount)
-                    except (ValueError):
-                        "Invalid input. Please enter a valid number."
-                
+                        amount = float(input("> Deposit amount: "))
+                        if auth.deposit(username, amount):
+                            print(f"Transferência feita com sucesso!")
+                            input("")
+                            break
+                    except ValueError:
+                        print("Invalid input. Please enter a valid number.")
+                        input("")
+        elif user_input == "withdraw" or user_input == "2":
+            print(auth.withdraw(username)[1])
+            input("")
+        elif user_input == "transfer" or user_input == "3":
+            recipient = input("> Enter recipient username: ")
+            amount = float(input("> Enter amount to transfer: "))
+            while True:
+                confirm = input(f"Confirm transfer of ${amount} to {recipient} (y/n) ") 
+                if confirm == "y":
+                    break
+            result = auth.transfer(username,user_info["db_password"], recipient, amount)
+            print(f"* {result[1]}")
+            input("")
+        elif user_input == "exit" or user_input == "4":
+            input("Press enter to exit")
+            clean_terminal()
+            break
